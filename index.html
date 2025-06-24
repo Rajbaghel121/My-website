@@ -63,12 +63,19 @@
     #calcArea {
       display: none;
       text-align: center;
-      margin-top: 20px;
+      margin: 20px;
     }
-    #calcArea input {
-      width: 250px;
-      font-size: 20px;
-      margin: 5px;
+    #calcScreen {
+      width: 90%;
+      font-size: 24px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    #calcButtons button {
+      width: 60px;
+      height: 40px;
+      font-size: 18px;
+      margin: 3px;
     }
   </style>
 </head>
@@ -97,15 +104,41 @@
   </div>
 
   <div id="calcArea">
-    <input type="text" id="calcInput" placeholder="Enter expression"/>
-    <div>
+    <input type="text" id="calcScreen" readonly />
+    <div id="calcButtons">
+      <button onclick="appendCalc('7')">7</button>
+      <button onclick="appendCalc('8')">8</button>
+      <button onclick="appendCalc('9')">9</button>
+      <button onclick="appendCalc('/')">/</button><br>
+      
+      <button onclick="appendCalc('4')">4</button>
+      <button onclick="appendCalc('5')">5</button>
+      <button onclick="appendCalc('6')">6</button>
+      <button onclick="appendCalc('*')">*</button><br>
+      
+      <button onclick="appendCalc('1')">1</button>
+      <button onclick="appendCalc('2')">2</button>
+      <button onclick="appendCalc('3')">3</button>
+      <button onclick="appendCalc('-')">-</button><br>
+      
+      <button onclick="appendCalc('0')">0</button>
+      <button onclick="appendCalc('.')">.</button>
       <button onclick="calculate()">=</button>
+      <button onclick="appendCalc('+')">+</button><br>
+      
+      <button onclick="appendCalc('Math.sin(')">sin</button>
+      <button onclick="appendCalc('Math.cos(')">cos</button>
+      <button onclick="appendCalc('Math.tan(')">tan</button>
+      <button onclick="appendCalc('Math.log(')">log</button><br>
+      
+      <button onclick="appendCalc('Math.sqrt(')">√</button>
+      <button onclick="appendCalc('**')">^</button>
       <button onclick="clearCalc()">C</button>
     </div>
-    <div id="calcResult"></div>
   </div>
 
   <script>
+    // Snake Game
     const snakeCanvas = document.getElementById('snakeCanvas');
     const sctx = snakeCanvas.getContext('2d');
     let snake, food, dx, dy, snakeInterval;
@@ -160,6 +193,7 @@
       else if (dir === 'right' && dx === 0) {dx = 20; dy = 0;}
     }
 
+    // Scientific Calculator
     function showCalculator() {
       document.getElementById('mainButtons').style.display = 'none';
       snakeCanvas.style.display = 'none';
@@ -167,19 +201,22 @@
       document.getElementById('calcArea').style.display = 'block';
     }
 
+    function appendCalc(value) {
+      document.getElementById('calcScreen').value += value;
+    }
+
     function calculate() {
-      const expr = document.getElementById('calcInput').value;
       try {
-        const result = eval(expr);
-        document.getElementById('calcResult').innerText = `Result: ${result}`;
+        let expr = document.getElementById('calcScreen').value;
+        let result = eval(expr);
+        document.getElementById('calcScreen').value = result;
       } catch {
-        document.getElementById('calcResult').innerText = 'Error';
+        document.getElementById('calcScreen').value = 'Error';
       }
     }
 
     function clearCalc() {
-      document.getElementById('calcInput').value = '';
-      document.getElementById('calcResult').innerText = '';
+      document.getElementById('calcScreen').value = '';
     }
   </script>
 </body>
