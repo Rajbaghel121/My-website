@@ -3,42 +3,189 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My first Website RAJ BAGHEL</title>
+  <title>Raj Baghel Machine Gun Game</title>
   <style>
     body {
-      background: linear-gradient(to right, #7f00ff, #e100ff);
-      color: white;
-      text-align: center;
-      font-family: Arial, sans-serif;
       margin: 0;
-      padding: 20px;
+      background: black;
+      overflow: hidden;
+      font-family: sans-serif;
+      color: white;
     }
-    h1 {
-      font-size: 2.5em;
-      margin: 20px 0;
+    #gameArea {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: none;
     }
-    .yt-button {
-      background: white;
-      color: #7f00ff;
-      padding: 12px 24px;
-      font-size: 1.2em;
-      text-decoration: none;
-      border-radius: 8px;
-      display: inline-block;
-      margin-top: 20px;
+    #gun {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
     }
-    .yt-button:hover {
-      background: #ddd;
+    .bullet {
+      position: absolute;
+      width: 5px;
+      height: 20px;
+      background: yellow;
+    }
+    .enemy {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: red;
+      top: 0;
+      border-radius: 50%;
+    }
+    #score, #health {
+      position: absolute;
+      top: 10px;
+      font-size: 20px;
+    }
+    #score { left: 10px; }
+    #health { right: 10px; }
+    #gameOver {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 40px;
+      display: none;
+    }
+    #menu {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    #menu button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 18px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>My first Website RAJ BAGHEL</h1>
-  <p>Click below to watch my YouTube video:</p>
+  <div id="menu">
+    <h1>Raj Baghel Machine Gun Game</h1>
+    <button onclick="startGame()">🎮 Play Game</button>
+    <button onclick="openYouTube()">📺 Watch on YouTube</button>
+  </div>
 
-  <a class="yt-button" href="https://youtube.com/shorts/kG3x80FTACI?si=7ORmwl7HytSnyx-C" target="_blank">
-    Watch on YouTube
-  </a>
+  <div id="gameArea">
+    <div id="score">Score: 0</div>
+    <div id="health">Health: 3</div>
+    <div id="gameOver">GAME OVER</div>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Uzi_9mm.png" id="gun" />
+  </div>
 
+  <audio id="gunSound" src="https://actions.google.com/sounds/v1/ambiences/gunshot_and_echo.ogg"></audio>
+  <audio id="explodeSound" src="https://actions.google.com/sounds/v1/explosions/explosion.ogg"></audio>
+
+  <script>
+    const gameArea = document.getElementById("gameArea");
+    const menu = document.getElementById("menu");
+    const gun = document.getElementById("gun");
+    const scoreDisplay = document.getElementById("score");
+    const healthDisplay = document.getElementById("health");
+    const gameOverText = document.getElementById("gameOver");
+    const gunSound = document.getElementById("gunSound");
+    const explodeSound = document.getElementById("explodeSound");
+    
+    let score = 0;
+    let health = 3;
+
+    function startGame() {
+      menu.style.display = "none";
+      gameArea.style.display = "block";
+      score = 0;
+      health = 3;
+      scoreDisplay.innerText = "Score: 0";
+      healthDisplay.innerText = "Health: 3";
+      gameOverText.style.display = "none";
+      setInterval(createEnemy, 1000);
+    }
+
+    function openYouTube() {
+      window.open("https://youtube.com/shorts/kG3x80FTACI?si=7ORmwl7HytSnyx-C", "_blank");
+    }
+
+    function fireBullet() {
+      gunSound.currentTime = 0;
+      gunSound.play();
+
+      const bullet = document.createElement("div");
+      bullet.className = "bullet";
+      bullet.style.left = (gun.offsetLeft + gun.offsetWidth / 2 - 2.5) + "px";
+      bullet.style.bottom = "80px";
+      gameArea.appendChild(bullet);
+
+      let interval = setInterval(() => {
+        bullet.style.bottom = parseInt(bullet.style.bottom) + 10 + "px";
+        if (parseInt(bullet.style.bottom) > window.innerHeight) {
+          clearInterval(interval);
+          bullet.remove();
+        } else {
+          document.querySelectorAll('.enemy').forEach(enemy => {
+            const bLeft = bullet.offsetLeft;
+            const bTop = parseInt(bullet.style.bottom);
+            const eLeft = enemy.offsetLeft;
+            const eTop = enemy.offsetTop;
+
+            if (
+              bLeft > eLeft &&
+              bLeft < eLeft + enemy.offsetWidth &&
+              bTop > eTop &&
+              bTop < eTop + enemy.offsetHeight
+            ) {
+              explodeSound.currentTime = 0;
+              explodeSound.play();
+              enemy.remove();
+              bullet.remove();
+              clearInterval(interval);
+              score += 10;
+              scoreDisplay.innerText = "Score: " + score;
+            }
+          });
+        }
+      }, 30);
+    }
+
+    function createEnemy() {
+      if (health <= 0) return;
+
+      const enemy = document.createElement("div");
+      enemy.className = "enemy";
+      enemy.style.left = Math.random() * (window.innerWidth - 40) + "px";
+      gameArea.appendChild(enemy);
+
+      let interval = setInterval(() => {
+        enemy.style.top = (enemy.offsetTop + 5) + "px";
+        if (enemy.offsetTop > window.innerHeight) {
+          clearInterval(interval);
+          enemy.remove();
+          health -= 1;
+          healthDisplay.innerText = "Health: " + health;
+          if (health <= 0) {
+            gameOverText.style.display = "block";
+          }
+        }
+      }, 50);
+    }
+
+    window.addEventListener("click", () => {
+      if (health > 0 && gameArea.style.display === "block") fireBullet();
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space" && health > 0 && gameArea.style.display === "block") {
+        fireBullet();
+      }
+    });
+  </script>
 </body>
 </html>
