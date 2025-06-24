@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Raj Bubble Shooter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RAJ BAGHEL WEBSITE FOR (BCA STUDENTS)</title>
   <style>
     body {
       margin: 0;
@@ -15,111 +15,172 @@
       color: white;
     }
     @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
     }
     #header {
-      position: absolute;
-      top: 0;
-      width: 100%;
       text-align: center;
-      padding: 10px 0;
+      padding: 10px;
       font-size: 24px;
       font-weight: bold;
       background: rgba(0,0,0,0.4);
     }
-    #buttons {
-      position: absolute;
-      top: 60px;
-      left: 50%;
-      transform: translateX(-50%);
+    #mainButtons {
       text-align: center;
+      margin-top: 30px;
     }
-    #buttons a {
-      display: inline-block;
-      padding: 10px 20px;
+    #mainButtons button, #mainButtons a {
+      padding: 12px 24px;
+      font-size: 20px;
       margin: 10px;
-      font-size: 18px;
-      color: white;
       background: linear-gradient(45deg, #00ff00, #0000ff);
+      color: white;
       border: 2px solid white;
       border-radius: 8px;
+      cursor: pointer;
       text-decoration: none;
     }
-    #gameArea {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
+    canvas {
       display: none;
+      background: rgba(0,0,0,0.7);
+      border: 2px solid white;
     }
-    #shooter {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60px;
-      height: 60px;
-      background: cyan;
-      border-radius: 50%;
+    #controls {
+      display: none;
+      text-align: center;
+      margin-top: 10px;
     }
-    .bubble {
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: yellow;
+    #controls button {
+      padding: 10px 20px;
+      font-size: 18px;
+      margin: 5px;
+      background: #333;
+      color: white;
+      border: 1px solid white;
+      border-radius: 6px;
+    }
+    #calcArea {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+    #calcArea input {
+      width: 250px;
+      font-size: 20px;
+      margin: 5px;
     }
   </style>
 </head>
 <body>
-  <div id="header">Raj Bubble Shooter — Amazing Colour</div>
-  <div id="buttons">
-    <a href="#" onclick="startGame()">▶️ Start Game</a>
+  <div id="header">RAJ BAGHEL WEBSITE FOR (BCA STUDENTS)</div>
+  
+  <div id="mainButtons">
+    <button onclick="startSnake()">🐍 Snake Game</button>
+    <button onclick="showCalculator()">🧠 Scientific Calculator</button>
     <a href="https://youtube.com/shorts/kG3x80FTACI?si=7ORmwl7HytSnyx-C" target="_blank">▶️ Watch on YouTube</a>
   </div>
-  
-  <div id="gameArea">
-    <div id="shooter"></div>
+
+  <canvas id="snakeCanvas" width="400" height="400"></canvas>
+
+  <div id="controls">
+    <div>
+      <button onclick="manualControl('up')">⬆️</button>
+    </div>
+    <div>
+      <button onclick="manualControl('left')">⬅️</button>
+      <button onclick="manualControl('right')">➡️</button>
+    </div>
+    <div>
+      <button onclick="manualControl('down')">⬇️</button>
+    </div>
+  </div>
+
+  <div id="calcArea">
+    <input type="text" id="calcInput" placeholder="Enter expression"/>
+    <div>
+      <button onclick="calculate()">=</button>
+      <button onclick="clearCalc()">C</button>
+    </div>
+    <div id="calcResult"></div>
   </div>
 
   <script>
-    const gameArea = document.getElementById("gameArea");
-    const shooter = document.getElementById("shooter");
-    let bubbleInterval;
+    const snakeCanvas = document.getElementById('snakeCanvas');
+    const sctx = snakeCanvas.getContext('2d');
+    let snake, food, dx, dy, snakeInterval;
 
-    function startGame() {
-      document.getElementById("buttons").style.display = "none";
-      gameArea.style.display = "block";
-      shooter.style.left = (window.innerWidth / 2 - 30) + "px";
-      shootBubbles();
+    function startSnake() {
+      document.getElementById('mainButtons').style.display = 'none';
+      document.getElementById('calcArea').style.display = 'none';
+      snakeCanvas.style.display = 'block';
+      document.getElementById('controls').style.display = 'block';
+      snake = [{x: 200, y: 200}];
+      dx = 20; dy = 0;
+      food = {x: Math.floor(Math.random()*20)*20, y: Math.floor(Math.random()*20)*20};
+      document.addEventListener('keydown', snakeControl);
+      snakeInterval = setInterval(drawSnake, 200);
     }
 
-    function shootBubbles() {
-      bubbleInterval = setInterval(() => {
-        const bubble = document.createElement("div");
-        bubble.className = "bubble";
-        bubble.style.left = (shooter.offsetLeft + 20) + "px";
-        bubble.style.bottom = "80px";
-        gameArea.appendChild(bubble);
-
-        let move = setInterval(() => {
-          bubble.style.bottom = (parseInt(bubble.style.bottom) + 5) + "px";
-          if (parseInt(bubble.style.bottom) > window.innerHeight) {
-            clearInterval(move);
-            bubble.remove();
-          }
-        }, 30);
-      }, 500);
-    }
-
-    window.addEventListener("keydown", e => {
-      if (e.code === "ArrowLeft") {
-        shooter.style.left = Math.max(0, shooter.offsetLeft - 20) + "px";
-      } else if (e.code === "ArrowRight") {
-        shooter.style.left = Math.min(window.innerWidth - shooter.offsetWidth, shooter.offsetLeft + 20) + "px";
+    function drawSnake() {
+      sctx.fillStyle = 'black';
+      sctx.fillRect(0, 0, 400, 400);
+      sctx.fillStyle = 'lime';
+      snake.forEach(part => sctx.fillRect(part.x, part.y, 20, 20));
+      sctx.fillStyle = 'red';
+      sctx.fillRect(food.x, food.y, 20, 20);
+      
+      let head = {x: snake[0].x + dx, y: snake[0].y + dy};
+      snake.unshift(head);
+      if (head.x === food.x && head.y === food.y) {
+        food = {x: Math.floor(Math.random()*20)*20, y: Math.floor(Math.random()*20)*20};
+      } else {
+        snake.pop();
       }
-    });
+
+      if (head.x < 0 || head.x >= 400 || head.y < 0 || head.y >= 400 ||
+          snake.slice(1).some(p => p.x === head.x && p.y === head.y)) {
+        clearInterval(snakeInterval);
+        alert('Game Over');
+        location.reload();
+      }
+    }
+
+    function snakeControl(e) {
+      if (e.code === 'ArrowUp' && dy === 0) {dx = 0; dy = -20;}
+      else if (e.code === 'ArrowDown' && dy === 0) {dx = 0; dy = 20;}
+      else if (e.code === 'ArrowLeft' && dx === 0) {dx = -20; dy = 0;}
+      else if (e.code === 'ArrowRight' && dx === 0) {dx = 20; dy = 0;}
+    }
+
+    function manualControl(dir) {
+      if (dir === 'up' && dy === 0) {dx = 0; dy = -20;}
+      else if (dir === 'down' && dy === 0) {dx = 0; dy = 20;}
+      else if (dir === 'left' && dx === 0) {dx = -20; dy = 0;}
+      else if (dir === 'right' && dx === 0) {dx = 20; dy = 0;}
+    }
+
+    function showCalculator() {
+      document.getElementById('mainButtons').style.display = 'none';
+      snakeCanvas.style.display = 'none';
+      document.getElementById('controls').style.display = 'none';
+      document.getElementById('calcArea').style.display = 'block';
+    }
+
+    function calculate() {
+      const expr = document.getElementById('calcInput').value;
+      try {
+        const result = eval(expr);
+        document.getElementById('calcResult').innerText = `Result: ${result}`;
+      } catch {
+        document.getElementById('calcResult').innerText = 'Error';
+      }
+    }
+
+    function clearCalc() {
+      document.getElementById('calcInput').value = '';
+      document.getElementById('calcResult').innerText = '';
+    }
   </script>
 </body>
 </html>
