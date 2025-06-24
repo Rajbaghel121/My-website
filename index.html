@@ -3,41 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Raj Baghel Machine Gun Game</title>
+  <title>Raj Bubble Shooter Game</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
       font-family: sans-serif;
       color: white;
+      background: url('https://images.unsplash.com/photo-1503437313881-503a91226422?fit=crop&w=1350&q=80') no-repeat center center / cover;
     }
     #gameArea {
       position: relative;
       width: 100vw;
       height: 100vh;
-      display: none;
-      background: url('https://images.unsplash.com/photo-1503437313881-503a91226422?fit=crop&w=1350&q=80') no-repeat center center / cover;
     }
-    #gun {
+    #cannon {
       position: absolute;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      width: 100px;
+      width: 80px;
+      height: 80px;
+      background: cyan;
+      border-radius: 50%;
     }
-    .bullet {
+    .bubble {
       position: absolute;
-      width: 5px;
+      width: 20px;
       height: 20px;
       background: yellow;
+      border-radius: 50%;
     }
     .enemy {
       position: absolute;
       width: 40px;
       height: 40px;
       background: red;
-      top: 0;
       border-radius: 50%;
+      top: 0;
     }
     #score, #health {
       position: absolute;
@@ -65,19 +68,6 @@
       border: 2px solid white;
       border-radius: 5px;
     }
-    #menu {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-    }
-    #menu button {
-      padding: 10px 20px;
-      margin: 10px;
-      font-size: 18px;
-      cursor: pointer;
-    }
     #controls {
       position: absolute;
       bottom: 10px;
@@ -97,12 +87,6 @@
   </style>
 </head>
 <body>
-  <div id="menu">
-    <h1>Raj Baghel Machine Gun Game</h1>
-    <button onclick="startGame()">🎮 Play Game</button>
-    <button onclick="openYouTube()">📺 Watch on YouTube</button>
-  </div>
-
   <div id="gameArea">
     <div id="score">Score: 0</div>
     <div id="health">Health: 3</div>
@@ -110,42 +94,30 @@
       GAME OVER <br/>
       <button onclick="restartGame()">🔄 Restart Game</button>
     </div>
-    <img src="https://cdn.pixabay.com/photo/2016/04/01/09/27/weapon-1300484_1280.png" id="gun" />
+    <div id="cannon"></div>
     <div id="controls">
+      <div><button onclick="moveCannon('up')">⬆️</button></div>
       <div>
-        <button onclick="moveGun('up')">⬆️</button>
+        <button onclick="moveCannon('left')">⬅️</button>
+        <button onclick="fireBubble()">💥</button>
+        <button onclick="moveCannon('right')">➡️</button>
       </div>
-      <div>
-        <button onclick="moveGun('left')">⬅️</button>
-        <button onclick="fireBullet()">🔫</button>
-        <button onclick="moveGun('right')">➡️</button>
-      </div>
-      <div>
-        <button onclick="moveGun('down')">⬇️</button>
-      </div>
+      <div><button onclick="moveCannon('down')">⬇️</button></div>
     </div>
   </div>
 
-  <audio id="gunSound" src="https://actions.google.com/sounds/v1/ambiences/gunshot_and_echo.ogg"></audio>
-  <audio id="explodeSound" src="https://actions.google.com/sounds/v1/explosions/explosion.ogg"></audio>
-
   <script>
     const gameArea = document.getElementById("gameArea");
-    const menu = document.getElementById("menu");
-    const gun = document.getElementById("gun");
+    const cannon = document.getElementById("cannon");
     const scoreDisplay = document.getElementById("score");
     const healthDisplay = document.getElementById("health");
     const gameOverText = document.getElementById("gameOver");
-    const gunSound = document.getElementById("gunSound");
-    const explodeSound = document.getElementById("explodeSound");
 
     let score = 0;
     let health = 3;
     let enemyInterval;
 
     function startGame() {
-      menu.style.display = "none";
-      gameArea.style.display = "block";
       resetGame();
       enemyInterval = setInterval(createEnemy, 1000);
     }
@@ -156,10 +128,10 @@
       scoreDisplay.innerText = "Score: 0";
       healthDisplay.innerText = "Health: 3";
       gameOverText.style.display = "none";
-      gun.style.left = (window.innerWidth / 2 - gun.offsetWidth / 2) + "px";
-      gun.style.bottom = "20px";
+      cannon.style.left = (window.innerWidth / 2 - cannon.offsetWidth / 2) + "px";
+      cannon.style.bottom = "20px";
       document.querySelectorAll('.enemy').forEach(e => e.remove());
-      document.querySelectorAll('.bullet').forEach(b => b.remove());
+      document.querySelectorAll('.bubble').forEach(b => b.remove());
     }
 
     function restartGame() {
@@ -168,29 +140,22 @@
       enemyInterval = setInterval(createEnemy, 1000);
     }
 
-    function openYouTube() {
-      window.open("https://youtube.com/shorts/kG3x80FTACI?si=7ORmwl7HytSnyx-C", "_blank");
-    }
-
-    function fireBullet() {
-      gunSound.currentTime = 0;
-      gunSound.play();
-
-      const bullet = document.createElement("div");
-      bullet.className = "bullet";
-      bullet.style.left = (gun.offsetLeft + gun.offsetWidth / 2 - 2.5) + "px";
-      bullet.style.bottom = (parseInt(gun.style.bottom) + gun.offsetHeight) + "px";
-      gameArea.appendChild(bullet);
+    function fireBubble() {
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.style.left = (cannon.offsetLeft + cannon.offsetWidth / 2 - 10) + "px";
+      bubble.style.bottom = (parseInt(cannon.style.bottom) + cannon.offsetHeight) + "px";
+      gameArea.appendChild(bubble);
 
       let interval = setInterval(() => {
-        bullet.style.bottom = parseInt(bullet.style.bottom) + 10 + "px";
-        if (parseInt(bullet.style.bottom) > window.innerHeight) {
+        bubble.style.bottom = parseInt(bubble.style.bottom) + 10 + "px";
+        if (parseInt(bubble.style.bottom) > window.innerHeight) {
           clearInterval(interval);
-          bullet.remove();
+          bubble.remove();
         } else {
           document.querySelectorAll('.enemy').forEach(enemy => {
-            const bLeft = bullet.offsetLeft;
-            const bTop = parseInt(bullet.style.bottom);
+            const bLeft = bubble.offsetLeft;
+            const bTop = window.innerHeight - parseInt(bubble.style.bottom);
             const eLeft = enemy.offsetLeft;
             const eTop = enemy.offsetTop;
 
@@ -200,10 +165,8 @@
               bTop > eTop &&
               bTop < eTop + enemy.offsetHeight
             ) {
-              explodeSound.currentTime = 0;
-              explodeSound.play();
               enemy.remove();
-              bullet.remove();
+              bubble.remove();
               clearInterval(interval);
               score += 10;
               scoreDisplay.innerText = "Score: " + score;
@@ -236,29 +199,32 @@
       }, 50);
     }
 
-    function moveGun(direction) {
-      let left = gun.offsetLeft;
-      let bottom = parseInt(gun.style.bottom);
+    function moveCannon(direction) {
+      let left = cannon.offsetLeft;
+      let bottom = parseInt(cannon.style.bottom);
       if (direction === "left") {
-        gun.style.left = Math.max(0, left - 20) + "px";
+        cannon.style.left = Math.max(0, left - 20) + "px";
       } else if (direction === "right") {
-        gun.style.left = Math.min(window.innerWidth - gun.offsetWidth, left + 20) + "px";
+        cannon.style.left = Math.min(window.innerWidth - cannon.offsetWidth, left + 20) + "px";
       } else if (direction === "up") {
-        gun.style.bottom = Math.min(window.innerHeight - gun.offsetHeight, bottom + 20) + "px";
+        cannon.style.bottom = Math.min(window.innerHeight - cannon.offsetHeight, bottom + 20) + "px";
       } else if (direction === "down") {
-        gun.style.bottom = Math.max(0, bottom - 20) + "px";
+        cannon.style.bottom = Math.max(0, bottom - 20) + "px";
       }
     }
 
     window.addEventListener("keydown", (e) => {
-      if (health > 0 && gameArea.style.display === "block") {
-        if (e.code === "ArrowLeft") moveGun("left");
-        else if (e.code === "ArrowRight") moveGun("right");
-        else if (e.code === "ArrowUp") moveGun("up");
-        else if (e.code === "ArrowDown") moveGun("down");
-        else if (e.code === "Space") fireBullet();
+      if (health > 0) {
+        if (e.code === "ArrowLeft") moveCannon("left");
+        else if (e.code === "ArrowRight") moveCannon("right");
+        else if (e.code === "ArrowUp") moveCannon("up");
+        else if (e.code === "ArrowDown") moveCannon("down");
+        else if (e.code === "Space") fireBubble();
       }
     });
+
+    // Auto start
+    startGame();
   </script>
 </body>
 </html>
