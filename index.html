@@ -17,23 +17,28 @@
       font-size: 2.5em;
       margin: 20px 0;
     }
-    iframe {
-      border-radius: 10px;
-      max-width: 90%;
+    .yt-button {
+      background: white;
+      color: #7f00ff;
+      padding: 12px 24px;
+      font-size: 1.2em;
+      text-decoration: none;
+      border-radius: 8px;
+      display: inline-block;
+      margin-top: 20px;
+    }
+    .yt-button:hover {
+      background: #ddd;
     }
   </style>
 </head>
 <body>
   <h1>My Amazing Website</h1>
-  <p>Enjoy this YouTube video!</p>
+  <p>Click below to watch my YouTube video:</p>
 
-  <iframe width="560" height="315"
-    src="https://www.youtube.com/embed/kG3x80FTACI"
-    title="YouTube video player"
-    frameborder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-    allowfullscreen>
-  </iframe>
+  <a class="yt-button" href="https://youtube.com/shorts/kG3x80FTACI?si=7ORmwl7HytSnyx-C" target="_blank">
+    Watch on YouTube
+  </a>
 
 </body>
 </html>
