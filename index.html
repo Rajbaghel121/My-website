@@ -10,8 +10,29 @@
       overflow: hidden;
       font-family: sans-serif;
       color: white;
-      background: url('https://images.unsplash.com/photo-1503437313881-503a91226422?fit=crop&w=1350&q=80') no-repeat center center / cover;
+      background: linear-gradient(-45deg, #ff00ff, #00ffff, #ffff00, #ff6600);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
     }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #header {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      padding: 10px 0;
+      background: rgba(0,0,0,0.5);
+      color: white;
+    }
+
     #gameArea {
       position: relative;
       width: 100vw;
@@ -44,7 +65,7 @@
     }
     #score, #health {
       position: absolute;
-      top: 10px;
+      top: 50px;
       font-size: 20px;
     }
     #score { left: 10px; }
@@ -87,6 +108,9 @@
   </style>
 </head>
 <body>
+  <div id="header">
+    Raj Baghel First Website — Amazing Colour
+  </div>
   <div id="gameArea">
     <div id="score">Score: 0</div>
     <div id="health">Health: 3</div>
