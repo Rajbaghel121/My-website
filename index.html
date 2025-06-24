@@ -2,43 +2,62 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Normal Website</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Amazing Website</title>
   <style>
     body {
-      background-color: #e0f7fa;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: linear-gradient(270deg, #ff6ec4, #7873f5);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 50px;
+      color: white;
     }
+
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
     h1 {
-      color: #00796b;
+      font-size: 3em;
+      text-shadow: 2px 2px 8px #000;
     }
+
     p {
-      color: #555;
+      font-size: 1.2em;
+      margin: 20px;
     }
-    a {
-      color: #0288d1;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    .button {
-      background-color: #00796b;
-      color: #fff;
-      padding: 10px 20px;
+
+    a button {
+      padding: 15px 30px;
+      font-size: 1.2em;
+      background: #fff;
+      color: #7873f5;
       border: none;
-      border-radius: 4px;
-      font-size: 16px;
-      margin-top: 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    a button:hover {
+      background: #ff6ec4;
+      color: #fff;
     }
   </style>
 </head>
 <body>
-  <h1>Welcome to My Normal Website</h1>
-  <p>This website is created using Acode on my Android phone.</p>
-  <a href="https://www.google.com" target="_blank">Visit Google</a>
-  <br/>
-  <button class="button" onclick="alert('Thank you for visiting!')">Click Me</button>
+  <h1>My Amazing Website</h1>
+  <p>Built with 💙 using Acode on my phone!</p>
+  <a href="https://google.com" target="_blank">
+    <button>Visit Google</button>
+  </a>
 </body>
+</html>
