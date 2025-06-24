@@ -3,48 +3,63 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Raj Bubble Shooter Game</title>
+  <title>Raj Bubble Shooter</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
       font-family: sans-serif;
-      color: white;
       background: linear-gradient(-45deg, #ff00ff, #00ffff, #ffff00, #ff6600);
       background-size: 400% 400%;
       animation: gradientBG 10s ease infinite;
+      color: white;
     }
-
     @keyframes gradientBG {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
-
     #header {
       position: absolute;
       top: 0;
       width: 100%;
       text-align: center;
+      padding: 10px 0;
       font-size: 24px;
       font-weight: bold;
-      padding: 10px 0;
-      background: rgba(0,0,0,0.5);
-      color: white;
+      background: rgba(0,0,0,0.4);
     }
-
+    #buttons {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+    #buttons a {
+      display: inline-block;
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 18px;
+      color: white;
+      background: linear-gradient(45deg, #00ff00, #0000ff);
+      border: 2px solid white;
+      border-radius: 8px;
+      text-decoration: none;
+    }
     #gameArea {
       position: relative;
       width: 100vw;
       height: 100vh;
+      display: none;
     }
-    #cannon {
+    #shooter {
       position: absolute;
       bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      width: 80px;
-      height: 80px;
+      width: 60px;
+      height: 60px;
       background: cyan;
       border-radius: 50%;
     }
@@ -52,203 +67,59 @@
       position: absolute;
       width: 20px;
       height: 20px;
+      border-radius: 50%;
       background: yellow;
-      border-radius: 50%;
-    }
-    .enemy {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      background: red;
-      border-radius: 50%;
-      top: 0;
-    }
-    #score, #health {
-      position: absolute;
-      top: 50px;
-      font-size: 20px;
-    }
-    #score { left: 10px; }
-    #health { right: 10px; }
-    #gameOver {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 40px;
-      display: none;
-      text-align: center;
-    }
-    #gameOver button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      font-size: 18px;
-      cursor: pointer;
-      background: #444;
-      color: white;
-      border: 2px solid white;
-      border-radius: 5px;
-    }
-    #controls {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      text-align: center;
-    }
-    #controls button {
-      background: #555;
-      color: white;
-      border: 1px solid white;
-      padding: 10px;
-      margin: 2px;
-      font-size: 18px;
-      border-radius: 5px;
     }
   </style>
 </head>
 <body>
-  <div id="header">
-    Raj Baghel First Website — Amazing Colour
+  <div id="header">Raj Bubble Shooter — Amazing Colour</div>
+  <div id="buttons">
+    <a href="#" onclick="startGame()">▶️ Start Game</a>
+    <a href="https://youtube.com/shorts/kG3x80FTACI?si=7ORmwl7HytSnyx-C" target="_blank">▶️ Watch on YouTube</a>
   </div>
+  
   <div id="gameArea">
-    <div id="score">Score: 0</div>
-    <div id="health">Health: 3</div>
-    <div id="gameOver">
-      GAME OVER <br/>
-      <button onclick="restartGame()">🔄 Restart Game</button>
-    </div>
-    <div id="cannon"></div>
-    <div id="controls">
-      <div><button onclick="moveCannon('up')">⬆️</button></div>
-      <div>
-        <button onclick="moveCannon('left')">⬅️</button>
-        <button onclick="fireBubble()">💥</button>
-        <button onclick="moveCannon('right')">➡️</button>
-      </div>
-      <div><button onclick="moveCannon('down')">⬇️</button></div>
-    </div>
+    <div id="shooter"></div>
   </div>
 
   <script>
     const gameArea = document.getElementById("gameArea");
-    const cannon = document.getElementById("cannon");
-    const scoreDisplay = document.getElementById("score");
-    const healthDisplay = document.getElementById("health");
-    const gameOverText = document.getElementById("gameOver");
-
-    let score = 0;
-    let health = 3;
-    let enemyInterval;
+    const shooter = document.getElementById("shooter");
+    let bubbleInterval;
 
     function startGame() {
-      resetGame();
-      enemyInterval = setInterval(createEnemy, 1000);
+      document.getElementById("buttons").style.display = "none";
+      gameArea.style.display = "block";
+      shooter.style.left = (window.innerWidth / 2 - 30) + "px";
+      shootBubbles();
     }
 
-    function resetGame() {
-      score = 0;
-      health = 3;
-      scoreDisplay.innerText = "Score: 0";
-      healthDisplay.innerText = "Health: 3";
-      gameOverText.style.display = "none";
-      cannon.style.left = (window.innerWidth / 2 - cannon.offsetWidth / 2) + "px";
-      cannon.style.bottom = "20px";
-      document.querySelectorAll('.enemy').forEach(e => e.remove());
-      document.querySelectorAll('.bubble').forEach(b => b.remove());
-    }
+    function shootBubbles() {
+      bubbleInterval = setInterval(() => {
+        const bubble = document.createElement("div");
+        bubble.className = "bubble";
+        bubble.style.left = (shooter.offsetLeft + 20) + "px";
+        bubble.style.bottom = "80px";
+        gameArea.appendChild(bubble);
 
-    function restartGame() {
-      clearInterval(enemyInterval);
-      resetGame();
-      enemyInterval = setInterval(createEnemy, 1000);
-    }
-
-    function fireBubble() {
-      const bubble = document.createElement("div");
-      bubble.className = "bubble";
-      bubble.style.left = (cannon.offsetLeft + cannon.offsetWidth / 2 - 10) + "px";
-      bubble.style.bottom = (parseInt(cannon.style.bottom) + cannon.offsetHeight) + "px";
-      gameArea.appendChild(bubble);
-
-      let interval = setInterval(() => {
-        bubble.style.bottom = parseInt(bubble.style.bottom) + 10 + "px";
-        if (parseInt(bubble.style.bottom) > window.innerHeight) {
-          clearInterval(interval);
-          bubble.remove();
-        } else {
-          document.querySelectorAll('.enemy').forEach(enemy => {
-            const bLeft = bubble.offsetLeft;
-            const bTop = window.innerHeight - parseInt(bubble.style.bottom);
-            const eLeft = enemy.offsetLeft;
-            const eTop = enemy.offsetTop;
-
-            if (
-              bLeft > eLeft &&
-              bLeft < eLeft + enemy.offsetWidth &&
-              bTop > eTop &&
-              bTop < eTop + enemy.offsetHeight
-            ) {
-              enemy.remove();
-              bubble.remove();
-              clearInterval(interval);
-              score += 10;
-              scoreDisplay.innerText = "Score: " + score;
-            }
-          });
-        }
-      }, 30);
-    }
-
-    function createEnemy() {
-      if (health <= 0) return;
-
-      const enemy = document.createElement("div");
-      enemy.className = "enemy";
-      enemy.style.left = Math.random() * (window.innerWidth - 40) + "px";
-      gameArea.appendChild(enemy);
-
-      let interval = setInterval(() => {
-        enemy.style.top = (enemy.offsetTop + 5) + "px";
-        if (enemy.offsetTop > window.innerHeight) {
-          clearInterval(interval);
-          enemy.remove();
-          health -= 1;
-          healthDisplay.innerText = "Health: " + health;
-          if (health <= 0) {
-            clearInterval(enemyInterval);
-            gameOverText.style.display = "block";
+        let move = setInterval(() => {
+          bubble.style.bottom = (parseInt(bubble.style.bottom) + 5) + "px";
+          if (parseInt(bubble.style.bottom) > window.innerHeight) {
+            clearInterval(move);
+            bubble.remove();
           }
-        }
-      }, 50);
+        }, 30);
+      }, 500);
     }
 
-    function moveCannon(direction) {
-      let left = cannon.offsetLeft;
-      let bottom = parseInt(cannon.style.bottom);
-      if (direction === "left") {
-        cannon.style.left = Math.max(0, left - 20) + "px";
-      } else if (direction === "right") {
-        cannon.style.left = Math.min(window.innerWidth - cannon.offsetWidth, left + 20) + "px";
-      } else if (direction === "up") {
-        cannon.style.bottom = Math.min(window.innerHeight - cannon.offsetHeight, bottom + 20) + "px";
-      } else if (direction === "down") {
-        cannon.style.bottom = Math.max(0, bottom - 20) + "px";
-      }
-    }
-
-    window.addEventListener("keydown", (e) => {
-      if (health > 0) {
-        if (e.code === "ArrowLeft") moveCannon("left");
-        else if (e.code === "ArrowRight") moveCannon("right");
-        else if (e.code === "ArrowUp") moveCannon("up");
-        else if (e.code === "ArrowDown") moveCannon("down");
-        else if (e.code === "Space") fireBubble();
+    window.addEventListener("keydown", e => {
+      if (e.code === "ArrowLeft") {
+        shooter.style.left = Math.max(0, shooter.offsetLeft - 20) + "px";
+      } else if (e.code === "ArrowRight") {
+        shooter.style.left = Math.min(window.innerWidth - shooter.offsetWidth, shooter.offsetLeft + 20) + "px";
       }
     });
-
-    // Auto start
-    startGame();
   </script>
 </body>
 </html>
